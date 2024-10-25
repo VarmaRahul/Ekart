@@ -17,13 +17,7 @@ pipeline {
         NEXUS_CREDENTIAL_ID = "f06037c7-fef2-4229-a71b-84ffb198bd0f"
     }
         
-    stages {
-        // stage('Hello') {
-        //     steps {
-        //         echo 'Hello World'
-        //     }
-        // }
-        
+    stages {      
         stage('Git Checkout') {
             steps {
                 git branch: 'main', changelog: false, poll: false, url: 'https://github.com/VarmaRahul/Ekart.git'
@@ -36,29 +30,29 @@ pipeline {
             }
         }
         
-        // stage('Unit Testing') {
-        //     steps {
-        //         sh 'mvn test'
-        //     }
-        // }
+        stage('Unit Testing') {
+            steps {
+                sh 'mvn test'
+            }
+        }
         
         
-        // stage('SonarQube Analysis') {
-        //     steps {
-        //         withSonarQubeEnv('sonar-server') {
-        //             sh """ $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=ekart \
-        //             -Dsonar.java.binaries=. \
-        //             -Dsonar.projectKey=ekart """
-        //         }
-        //     }
-        // }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh """ $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=ekart \
+                    -Dsonar.java.binaries=. \
+                    -Dsonar.projectKey=ekart """
+                }
+            }
+        }
         
-        // stage("OWASP Dependency Check"){
-        //     steps{
-        //         dependencyCheck additionalArguments: "--scan ./ ", odcInstallation: "DP-Check"
-        //         dependencyCheckPublisher pattern: "**/dependency-check-report.xml"
-        //     }
-        // }
+        stage("OWASP Dependency Check"){
+            steps{
+                dependencyCheck additionalArguments: "--scan ./ ", odcInstallation: "DP-Check"
+                dependencyCheckPublisher pattern: "**/dependency-check-report.xml"
+            }
+        }
 
         stage("Build Artifact"){
             steps{
@@ -117,15 +111,15 @@ pipeline {
         //     }
         // }
         
-        // stage("Push to Docker Hub") {
-        //     steps{
-        //         script { 
-        //             withDockerRegistry(credentialsId: '7f32548b-aeb7-4142-bb98-cbd20aa8e4f8', toolName: 'docker') {
-        //                 sh "docker push xedose/ekart:latest "
-        //             }
-        //         }
-        //     }
-        // }
+        stage("Push to Docker Hub") {
+            steps{
+                script { 
+                    withDockerRegistry(credentialsId: '7f32548b-aeb7-4142-bb98-cbd20aa8e4f8', toolName: 'docker') {
+                        sh "docker push xedose/ekart:latest "
+                    }
+                }
+            }
+        }
         
         // stage("Deploy using Docker") {
         //     steps {
@@ -154,14 +148,6 @@ pipeline {
                 }
             }
         }
-
-
-        
-        // stage("Deploy using Tomcat"){
-        //     steps{
-        //         sh "cp /var/lib/jenkins/workspace/Security-pipeline/target/petclinic.war /opt/apache-tomcat/webapps"
-        //     }
-        // }
         
     }
 }
